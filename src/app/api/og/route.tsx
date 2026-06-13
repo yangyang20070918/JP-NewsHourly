@@ -31,9 +31,16 @@ export async function GET(request: NextRequest) {
         titles = rows.map((r) => r.title);
       }
     } catch {
-      // fall through to empty state
+      // fall through
     }
   }
+
+  const newsItems = titles.length > 0
+    ? titles.map((title, i) => ({
+        num: `${i + 1}.`,
+        title,
+      }))
+    : [{ num: "", title: "ニュースデータを取得中..." }];
 
   return new ImageResponse(
     (
@@ -45,28 +52,23 @@ export async function GET(request: NextRequest) {
           flexDirection: "column",
           background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
           color: "#f1f5f9",
-          padding: "40px",
+          padding: 40,
+          fontFamily: "sans-serif",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "16px",
-            marginBottom: "16px",
-          }}
-        >
-          <span style={{ fontSize: "28px", fontWeight: 700, color: "#3b82f6" }}>
+        <div style={{ display: "flex", marginBottom: 16 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color: "#3b82f6" }}>
             JP NewsHourly
           </span>
         </div>
 
         <div
           style={{
-            fontSize: "18px",
+            display: "flex",
+            fontSize: 18,
             color: "#94a3b8",
-            marginBottom: "24px",
-            paddingBottom: "16px",
+            marginBottom: 24,
+            paddingBottom: 16,
             borderBottom: "1px solid #334155",
           }}
         >
@@ -77,36 +79,22 @@ export async function GET(request: NextRequest) {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "14px",
+            gap: 14,
             flex: 1,
           }}
         >
-          {titles.length === 0 ? (
-            <div
-              style={{
-                display: "flex",
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#64748b",
-              }}
-            >
-              ニュースデータを取得中...
+          {newsItems.map((item, i) => (
+            <div key={i} style={{ display: "flex", gap: 12 }}>
+              {item.num && (
+                <span style={{ color: "#94a3b8", fontWeight: 700, width: 24 }}>
+                  {item.num}
+                </span>
+              )}
+              <span style={{ fontSize: 15, fontWeight: 600 }}>
+                {item.title}
+              </span>
             </div>
-          ) : (
-            titles.map((title, i) => (
-              <div key={i} style={{ display: "flex", gap: "12px" }}>
-                <span
-                  style={{ color: "#94a3b8", fontWeight: 700, width: "24px" }}
-                >
-                  {i + 1}.
-                </span>
-                <span style={{ fontSize: "15px", fontWeight: 600 }}>
-                  {title}
-                </span>
-              </div>
-            ))
-          )}
+          ))}
         </div>
 
         <div
@@ -114,19 +102,22 @@ export async function GET(request: NextRequest) {
             display: "flex",
             justifyContent: "space-between",
             borderTop: "1px solid #334155",
-            paddingTop: "16px",
-            marginTop: "16px",
+            paddingTop: 16,
+            marginTop: 16,
           }}
         >
-          <span style={{ fontSize: "12px", color: "#64748b" }}>
+          <span style={{ fontSize: 12, color: "#64748b" }}>
             Powered by Next.js
           </span>
-          <span style={{ fontSize: "12px", color: "#3b82f6" }}>
+          <span style={{ fontSize: 12, color: "#3b82f6" }}>
             jp-news-hourly.vercel.app
           </span>
         </div>
       </div>
     ),
-    { width: 600, height: 1200 }
+    {
+      width: 600,
+      height: 1200,
+    }
   );
 }

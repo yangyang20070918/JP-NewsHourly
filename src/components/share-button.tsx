@@ -45,10 +45,10 @@ export function ShareButton() {
           onClick={() => setShowPreview(false)}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-md overflow-auto rounded-2xl bg-card p-4 shadow-2xl"
+            className="relative flex max-h-[90vh] w-full max-w-sm flex-col rounded-2xl bg-card p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex shrink-0 items-center justify-between">
               <h3 className="text-sm font-bold text-card-foreground">
                 今日のニュース簡報
               </h3>
@@ -60,14 +60,16 @@ export function ShareButton() {
               </button>
             </div>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={ogUrl}
-              alt="今日のニュース"
-              className="w-full rounded-lg border border-border"
-            />
+            <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={ogUrl}
+                alt="今日のニュース"
+                className="h-full w-full object-contain"
+              />
+            </div>
 
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex shrink-0 gap-2">
               <button
                 onClick={handleDownload}
                 disabled={downloading}

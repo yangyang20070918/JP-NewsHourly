@@ -78,7 +78,7 @@ PostgreSQL database stores all fetched news for historical browsing.
 
 Server-side PNG generation (600x1200) with dark gradient background, date header, numbered news titles, and site URL.
 
-**Tech:** `@vercel/og` (Satori engine), API Route at `/api/og`. Share button opens modal with image preview and download button.
+**Tech:** `@vercel/og` (Satori engine), API Route at `/api/og` (edge runtime). Page titles are passed via props (`page.tsx → Header → ShareButton`) and POSTed to `/api/og` to guarantee the share image matches exactly what's on screen. Modal uses `createPortal` to escape header's `backdrop-filter` stacking context, with `max-h-[85dvh]` responsive constraint.
 
 ### 8. RSS Feed Output
 

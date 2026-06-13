@@ -60,14 +60,13 @@ export function ShareButton() {
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={ogUrl}
-                alt="今日のニュース"
-                className="h-full w-full object-contain"
-              />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={ogUrl}
+              alt="今日のニュース"
+              className="w-full rounded-lg border border-border"
+              style={{ maxHeight: "calc(90vh - 120px)", objectFit: "contain" }}
+            />
 
             <div className="mt-3 flex shrink-0 gap-2">
               <button

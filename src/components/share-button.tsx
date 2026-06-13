@@ -4,30 +4,72 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Share2, X, Download } from "lucide-react";
 
-export function ShareButton() {
+interface ShareButtonProps {
+  titles?: string[];
+}
+
+export function ShareButton({ titles }: ShareButtonProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  const today = new Date()
-    .toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
-  const ogUrl = `/api/og?date=${today}`;
+  useEffect(() => {
+    return () => {
+      if (imageUrl) URL.revokeObjectURL(imageUrl);
+    };
+  }, [imageUrl]);
+
+  const fetchImage = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/og", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ titles: titles ?? [] }),
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      setImageUrl(url);
+    } catch {
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+      setImageUrl(`/api/og?date=${today}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOpen = () => {
+    setShowPreview(true);
+    fetchImage();
+  };
+
+  const handleClose = () => {
+    setShowPreview(false);
+    if (imageUrl) {
+      URL.revokeObjectURL(imageUrl);
+      setImageUrl(null);
+    }
+  };
 
   const handleDownload = async () => {
+    if (!imageUrl) return;
     setDownloading(true);
     try {
-      const res = await fetch(ogUrl);
+      const res = await fetch(imageUrl);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
+      const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
       a.download = `jp-news-${today}.png`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      window.open(ogUrl, "_blank");
+      window.open(imageUrl, "_blank");
     } finally {
       setDownloading(false);
     }
@@ -36,7 +78,7 @@ export function ShareButton() {
   return (
     <>
       <button
-        onClick={() => setShowPreview(true)}
+        onClick={handleOpen}
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-accent hover:bg-accent/10 hover:text-accent"
         title="今日の簡報を共有"
       >
@@ -46,7 +88,7 @@ export function ShareButton() {
       {showPreview && mounted && createPortal(
         <div
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-          onClick={() => setShowPreview(false)}
+          onClick={handleClose}
         >
           <div
             className="relative flex max-h-[85dvh] w-full max-w-sm flex-col rounded-2xl bg-card p-4 shadow-2xl"
@@ -57,7 +99,7 @@ export function ShareButton() {
                 今日のニュース簡報
               </h3>
               <button
-                onClick={() => setShowPreview(false)}
+                onClick={handleClose}
                 className="rounded-lg p-1 text-muted-foreground hover:text-card-foreground"
               >
                 <X className="h-4 w-4" />
@@ -65,18 +107,24 @@ export function ShareButton() {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={ogUrl}
-                alt="今日のニュース"
-                className="w-full rounded-lg border border-border"
-              />
+              {loading ? (
+                <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
+                  画像を生成中...
+                </div>
+              ) : imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imageUrl}
+                  alt="今日のニュース"
+                  className="w-full rounded-lg border border-border"
+                />
+              ) : null}
             </div>
 
             <div className="mt-3 flex shrink-0 gap-2">
               <button
                 onClick={handleDownload}
-                disabled={downloading}
+                disabled={downloading || loading || !imageUrl}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />

@@ -5,9 +5,10 @@ import { ShareButton } from "./share-button";
 
 interface HeaderProps {
   lastUpdated: string;
+  titles?: string[];
 }
 
-export function Header({ lastUpdated }: HeaderProps) {
+export function Header({ lastUpdated, titles }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
@@ -38,7 +39,7 @@ export function Header({ lastUpdated }: HeaderProps) {
           >
             <History className="h-4 w-4" />
           </Link>
-          <ShareButton />
+          <ShareButton titles={titles} />
           <ThemeToggle />
         </div>
       </div>

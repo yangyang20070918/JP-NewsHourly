@@ -10,7 +10,7 @@ export default async function Home() {
 
   return (
     <>
-      <Header lastUpdated={data.lastUpdated} />
+      <Header lastUpdated={data.lastUpdated} titles={data.items.map((i) => i.title)} />
       <NewsGrid items={data.items} keywords={data.keywords} />
       <Footer />
     </>

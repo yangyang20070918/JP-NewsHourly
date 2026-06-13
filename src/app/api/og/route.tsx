@@ -3,38 +3,7 @@ import { type NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-export async function GET(request: NextRequest) {
-  const date =
-    request.nextUrl.searchParams.get("date") ??
-    new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
-
-  const displayDate = date.replace(/-/g, "/");
-
-  const supabaseUrl = process.env.SUPABASE_URL ?? "";
-  const supabaseKey = process.env.SUPABASE_ANON_KEY ?? "";
-
-  let titles: string[] = [];
-
-  if (supabaseUrl) {
-    try {
-      const startOfDay = `${date}T00:00:00+09:00`;
-      const endOfDay = `${date}T23:59:59+09:00`;
-      const url = `${supabaseUrl}/rest/v1/news_items?select=title&created_at=gte.${encodeURIComponent(startOfDay)}&created_at=lte.${encodeURIComponent(endOfDay)}&order=published_at.desc&limit=10`;
-      const res = await fetch(url, {
-        headers: {
-          apikey: supabaseKey,
-          Authorization: `Bearer ${supabaseKey}`,
-        },
-      });
-      if (res.ok) {
-        const rows = (await res.json()) as { title: string }[];
-        titles = rows.map((r) => r.title);
-      }
-    } catch {
-      // fall through
-    }
-  }
-
+function renderImage(titles: string[], displayDate: string) {
   const newsItems = titles.length > 0
     ? titles.map((title, i) => ({
         num: `${i + 1}.`,
@@ -120,4 +89,43 @@ export async function GET(request: NextRequest) {
       height: 1200,
     }
   );
+}
+
+export async function POST(request: NextRequest) {
+  const body = (await request.json()) as { titles?: string[] };
+  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+  return renderImage(body.titles ?? [], today.replace(/-/g, "/"));
+}
+
+export async function GET(request: NextRequest) {
+  const date =
+    request.nextUrl.searchParams.get("date") ??
+    new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
+
+  const displayDate = date.replace(/-/g, "/");
+
+  const supabaseUrl = process.env.SUPABASE_URL ?? "";
+  const supabaseKey = process.env.SUPABASE_ANON_KEY ?? "";
+
+  let titles: string[] = [];
+
+  if (supabaseUrl) {
+    try {
+      const url = `${supabaseUrl}/rest/v1/news_items?select=title&order=published_at.desc&limit=10`;
+      const res = await fetch(url, {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+        },
+      });
+      if (res.ok) {
+        const rows = (await res.json()) as { title: string }[];
+        titles = rows.map((r) => r.title);
+      }
+    } catch {
+      // fall through
+    }
+  }
+
+  return renderImage(titles, displayDate);
 }

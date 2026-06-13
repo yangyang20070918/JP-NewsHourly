@@ -20,7 +20,7 @@ export function Footer() {
             RSS
           </a>
           <a
-            href="https://github.com"
+            href="https://github.com/yangyang20070918/JP-NewsHourly"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 transition-colors hover:text-accent"

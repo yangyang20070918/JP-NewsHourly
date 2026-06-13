@@ -45,7 +45,7 @@ export function ShareButton() {
           onClick={() => setShowPreview(false)}
         >
           <div
-            className="relative rounded-2xl bg-card p-4 shadow-2xl"
+            className="relative w-72 rounded-2xl bg-card p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center justify-between">
@@ -64,8 +64,7 @@ export function ShareButton() {
             <img
               src={ogUrl}
               alt="今日のニュース"
-              className="rounded-lg border border-border"
-              style={{ maxHeight: "72vh", width: "auto" }}
+              className="w-full rounded-lg border border-border"
             />
 
             <div className="mt-3 flex gap-2">

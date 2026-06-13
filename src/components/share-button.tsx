@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Share2, X, Download } from "lucide-react";
 
 export function ShareButton() {
   const [showPreview, setShowPreview] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const today = new Date()
     .toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" });
@@ -39,16 +43,16 @@ export function ShareButton() {
         <Share2 className="h-4 w-4" />
       </button>
 
-      {showPreview && (
+      {showPreview && mounted && createPortal(
         <div
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={() => setShowPreview(false)}
         >
           <div
-            className="relative w-72 rounded-2xl bg-card p-4 shadow-2xl"
+            className="relative flex max-h-[85dvh] w-full max-w-sm flex-col rounded-2xl bg-card p-4 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex shrink-0 items-center justify-between">
               <h3 className="text-sm font-bold text-card-foreground">
                 今日のニュース簡報
               </h3>
@@ -60,14 +64,16 @@ export function ShareButton() {
               </button>
             </div>
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={ogUrl}
-              alt="今日のニュース"
-              className="w-full rounded-lg border border-border"
-            />
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={ogUrl}
+                alt="今日のニュース"
+                className="w-full rounded-lg border border-border"
+              />
+            </div>
 
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex shrink-0 gap-2">
               <button
                 onClick={handleDownload}
                 disabled={downloading}
@@ -78,7 +84,8 @@ export function ShareButton() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

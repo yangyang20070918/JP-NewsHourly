@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --bg: #f8fafc;
+  --fg: #0f172a;
+  --card-bg: #ffffff;
+  --card-fg: #0f172a;
+  --muted-bg: #f1f5f9;
+  --muted-fg: #64748b;
+  --border-color: #e2e8f0;
+  --accent-color: #2563eb;
+  --accent-fg: #ffffff;
+}
+
+.dark {
+  --bg: #0f172a;
+  --fg: #f1f5f9;
+  --card-bg: #1e293b;
+  --card-fg: #f1f5f9;
+  --muted-bg: #334155;
+  --muted-fg: #94a3b8;
+  --border-color: #334155;
+  --accent-color: #3b82f6;
+  --accent-fg: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card: var(--card-bg);
+  --color-card-foreground: var(--card-fg);
+  --color-muted: var(--muted-bg);
+  --color-muted-foreground: var(--muted-fg);
+  --color-border: var(--border-color);
+  --color-accent: var(--accent-color);
+  --color-accent-foreground: var(--accent-fg);
+}
+
+body {
+  font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease both;
+}

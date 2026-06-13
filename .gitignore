@@ -1,0 +1,44 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+*.pem
+.DS_Store
+
+# debug
+npm-debug.log*
+
+# env files
+.env
+.env*.local
+!.env.example
+
+# vercel
+.vercel
+
+# claude code
+.claude/
+
+# notes
+memo_*.txt
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
